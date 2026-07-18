@@ -1,0 +1,10 @@
+---
+apt_clickhouse_gpg_key_src_url: "https://packages.clickhouse.com/rpm/lts/repodata/repomd.xml.key"
+apt_clickhouse_repository_url: "https://packages.clickhouse.com/deb" 
+
+apt_clickhouse_packages:
+  - clickhouse-client=26.6.1.1193
+  - clickhouse-server=26.6.1.1193
+  - clickhouse-common-static=26.6.1.1193
+
+clickhouse_db_name: "logs"

@@ -1,0 +1,78 @@
+---
+- name: "Install Clickhouse"
+  hosts: "clickhouse"
+  gather_facts: true
+  become: true
+  pre_tasks:
+    - name: "Create APT GPG keyring directory"
+      ansible.builtin.file:
+        path: "{{ apt_gpg_keyrings_dir_path }}"
+        state: "directory"
+        mode: "0755"
+  tasks:
+    - name: "Add Clickhouse repository"
+      ansible.builtin.deb822_repository:
+        name: "clickhouse"
+        types: ["deb"]
+        uris: ["{{ apt_clickhouse_repository_url }}"]
+        suites: ["stable"]
+        components: ["main"]
+        architectures: ["{{ 'amd64' if ansible_facts['architecture'] == 'x86_64' else 'arm64' }}"]
+        signed_by: "{{ apt_clickhouse_gpg_key_src_url }}"
+    - name: "Install Clickhouse packages"
+      ansible.builtin.apt:
+        pkg: "{{ apt_clickhouse_packages }}"
+        state: "present"
+        update_cache: true
+      notify:
+        - "Enable Clickhouse service"
+  post_tasks:
+    - name: "Create Database"
+      ansible.builtin.command: "clickhouse-client -q 'create database {{ clickhouse_db_name }};'"
+      register: create_db
+      failed_when: create_db.rc != 0 and create_db.rc != 82
+      changed_when: create_db.rc == 0
+  handlers:
+    - name: "Enable Clickhouse service"
+      ansible.builtin.service:
+        name: "clickhouse-server"
+        state: "started"
+        enabled: true
+
+- name: "Install Lighthouse"
+  hosts: "lighthouse"
+  become: true
+  gather_facts: true
+  pre_tasks:
+    - name: "Install required packages"
+      ansible.builtin.apt:
+        pkg: "{{ apt_required_packages }}"
+        state: "present"
+        update_cache: true
+    - name: "Create lighthouse working directory"
+      ansible.builtin.file:
+        path: "{{ lighthouse_working_dir }}"
+        state: "directory"
+        owner: "root"
+        group: "root"
+        mode: "0755"
+  tasks:
+    - name: "Clone lighthouse Git repository"
+      ansible.builtin.git:
+        repo: "{{ lighthouse_git_repository_url }}"
+        dest: "{{ lighthouse_working_dir }}"
+    - name: "Configure Nginx for Lighthouse"
+      ansible.builtin.template:
+        src: "templates/nginx/lighthouse.j2"
+        dest: "/etc/nginx/sites-available/default"
+        owner: "root"
+        group: "root"
+        mode: "0644"
+      notify:
+        - "Restart Nginx service"
+  handlers:
+    - name: "Restart Nginx service"
+      ansible.builtin.service:
+        name: "nginx"
+        state: "restarted"
+        enabled: true
