@@ -12,7 +12,7 @@ roles:
 
   - src: "https://github.com/AZabelin-GO/shkonf-31-08-ansible-104-vector.git"
     scm: "git"
-    version: "0.1.3"
+    version: "0.1.4"
     name: "vector-role"
 
 collections:
