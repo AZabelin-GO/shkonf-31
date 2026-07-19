@@ -1,0 +1,8 @@
+---
+clickhouse_admin_user: "admin"
+clickhouse_admin_password: "admin@clickhouse"
+
+vector_clickhouse_user: "vector"
+vector_clickhouse_password: "vector@clickhouse"
+vector_clickhouse_db_name: "vector"
+vector_clickhouse_table_name: "logs"

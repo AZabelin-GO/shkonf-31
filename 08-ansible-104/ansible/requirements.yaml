@@ -1,0 +1,20 @@
+---
+roles:
+  - src: "https://github.com/AZabelin-GO/shkonf-31-08-ansible-104-clickhouse.git"
+    scm: "git"
+    version: "0.1.3"
+    name: "clickhouse-role"
+
+  - src: "https://github.com/AZabelin-GO/shkonf-31-08-ansible-104-lighthouse.git"
+    scm: "git"
+    version: "0.1.1"
+    name: "lighthouse-role"
+
+  - src: "https://github.com/AZabelin-GO/shkonf-31-08-ansible-104-vector.git"
+    scm: "git"
+    version: "0.1.3"
+    name: "vector-role"
+
+collections:
+  - name: "community.clickhouse"
+    version: "2.3.0"

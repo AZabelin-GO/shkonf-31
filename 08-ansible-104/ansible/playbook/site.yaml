@@ -1,0 +1,61 @@
+---
+- name: "Install Clickhouse"
+  hosts: "clickhouse"
+  gather_facts: true
+  become: true
+  roles:
+    - role: "clickhouse-role"
+  post_tasks:
+    - name: "Create Database for Vector"
+      community.clickhouse.clickhouse_db:
+        name: "{{ vector_clickhouse_db_name }}"
+        login_user: "{{ clickhouse_admin_user }}"
+        login_password: "{{ clickhouse_admin_password }}"
+        state: "present"
+    - name: "Create ClickHouse user for Vector"
+      community.clickhouse.clickhouse_user:
+        name: "{{ vector_clickhouse_user }}"
+        password: "{{ vector_clickhouse_password }}"
+        state: "present"
+        login_user: "{{ clickhouse_admin_user }}"
+        login_password: "{{ clickhouse_admin_password }}"
+    - name: "Grant privileges to Vector user"
+      community.clickhouse.clickhouse_grants:
+        grantee: "{{ vector_clickhouse_user }}"
+        privileges:
+          - object: "{{ vector_clickhouse_db_name }}.*"
+            privs:
+              "SELECT": true
+              "INSERT": true
+        state: present
+        login_user: "{{ clickhouse_admin_user }}"
+        login_password: "{{ clickhouse_admin_password }}"
+    - name: "Create Table for Vector logs"
+      ansible.builtin.command: >
+        clickhouse-client 
+        --user {{ clickhouse_admin_user }} 
+        --password '{{ clickhouse_admin_password }}'
+        -q "CREATE TABLE IF NOT EXISTS {{ vector_clickhouse_db_name }}.{{ vector_clickhouse_table_name }} (
+          timestamp DateTime,
+          message String
+        ) ENGINE = MergeTree() 
+        ORDER BY timestamp;"
+      changed_when: false
+
+- name: "Install Lighthouse"
+  hosts: "lighthouse"
+  become: true
+  roles:
+    - role: "lighthouse-role"
+
+- name: "Install vector"
+  hosts: "vector"
+  become: true
+  roles:
+    - role: "vector-role"
+      vars:
+        clickhouse_url: "http://{{ hostvars[groups['clickhouse'][0]]['ansible_host'] }}:8123"
+        clickhouse_user: "{{ vector_clickhouse_user }}"
+        clickhouse_password: "{{ vector_clickhouse_password }}"
+        clickhouse_db_name: "{{ vector_clickhouse_db_name }}"
+        clickhouse_table_name: "{{ vector_clickhouse_table_name }}"

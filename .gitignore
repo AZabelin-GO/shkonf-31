@@ -8,6 +8,8 @@ private_key
 
 ### Ansible ###
 *.retry
+roles/
+collections/
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
