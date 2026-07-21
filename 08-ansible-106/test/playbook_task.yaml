@@ -1,0 +1,11 @@
+---
+- name: "Demonstrate custom module usage"
+  hosts: "localhost"
+  connection: "local"
+  gather_facts: false
+
+  tasks:
+    - name: "Create or update file content"
+      my_own_namespace.yandex_cloud_elk.shkonf_31_module:
+        path: "/tmp/direct_module_output.txt"
+        content: "Hello from my_own_namespace.yandex_cloud_elk module!\n"

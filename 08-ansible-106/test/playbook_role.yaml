@@ -1,0 +1,11 @@
+---
+- name: "Demonstrate custom role usage"
+  hosts: "localhost"
+  connection: "local"
+  gather_facts: false
+
+  roles:
+    - role: "my_own_namespace.yandex_cloud_elk.create_file"
+      vars:
+        file_path: "/tmp/role_output.txt"
+        file_content: "Custom content provided via playbook role variables.\n"

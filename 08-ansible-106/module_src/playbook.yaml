@@ -1,0 +1,11 @@
+---
+- name: "Testing custom module"
+  hosts: "localhost"
+  connection: "local"
+  gather_facts: false
+
+  tasks:
+    - name: "Create file using custom module"
+      shkonf_31_module:
+        path: "/tmp/custom_module_test.txt"
+        content: "Ansible Module!"

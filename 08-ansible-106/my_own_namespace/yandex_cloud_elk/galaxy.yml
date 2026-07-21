@@ -1,0 +1,28 @@
+# SPDX-License-Identifier: MIT
+---
+namespace: my_own_namespace
+name: yandex_cloud_elk
+version: 1.0.0
+readme: README.md
+authors:
+  - AZabelin <azabelin@example-domain.com>
+
+description: Ansible collection containing custom module and role for file creation
+license:
+  - MIT
+tags:
+  - file
+  - custom_module
+  - yandex
+
+dependencies: {}
+repository: https://github.com/AZabelin-GO/shkonf-31.git
+documentation: https://github.com/AZabelin-GO/shkonf-31/tree/main/08-ansible-106#readme
+homepage: https://github.com/AZabelin-GO/shkonf-31/tree/main/08-ansible-106
+issues: https://github.com/AZabelin-GO/shkonf-31/issues
+
+build_ignore:
+  - "*.tar.gz"
+  - ".git*"
+  - ".vscode"
+  - ".venv"
